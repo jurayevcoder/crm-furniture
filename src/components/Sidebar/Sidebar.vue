@@ -1,8 +1,8 @@
 <script setup>
-import { ref } from "vue";
-import { navLinks } from "../../constants/navLinks";
+import { ref } from 'vue'
+import { navLinks } from '../../constants/navLinks'
 
-const navlink = ref(navLinks);
+const navlink = ref(navLinks)
 </script>
 
 <template>
@@ -37,12 +37,13 @@ const navlink = ref(navLinks);
     >
       <div class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
         <ul class="space-y-2 font-medium">
-          <li>
+          <li v-for="link in navlink" :key="link.id">
             <router-link
-              :to="'/'"
+              :to="link.link"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <span class="ml-3">Dashboard</span>
+              <i :class="link.icon"></i>
+              <span class="ml-3">{{ link.title }}</span>
             </router-link>
           </li>
         </ul>
@@ -51,4 +52,8 @@ const navlink = ref(navLinks);
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.router-link-active {
+  border: 1px dashed rgb(128, 128, 128, 0.586);
+}
+</style>
