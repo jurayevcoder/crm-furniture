@@ -2,7 +2,7 @@
 
 <template>
   <div class="p-3">
-    <h2 class="uppercase dark:text-white text-gray-900">Login</h2>
+    <h2 class="uppercase dark:text-white text-gray-900 text-center text-4xl">Login</h2>
   </div>
 </template>
 

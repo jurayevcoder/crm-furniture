@@ -1,11 +1,11 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import { onMounted } from 'vue'
-import { initFlowbite } from 'flowbite'
+import { RouterLink, RouterView } from "vue-router";
+import { onMounted } from "vue";
+import { initFlowbite } from "flowbite";
 
 onMounted(() => {
-  initFlowbite()
-})
+  initFlowbite();
+});
 </script>
 
 <template>

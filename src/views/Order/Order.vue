@@ -2,7 +2,7 @@
 
 <template>
   <div class="p-3">
-    <h2 class="uppercase dark:text-white text-gray-900">Orders</h2>
+    <h2 class="uppercase dark:text-white text-gray-900 text-center text-4xl">Buyurtmalar</h2>
   </div>
 </template>
 
