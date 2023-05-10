@@ -1,9 +1,51 @@
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive } from 'vue'
+import { employeeStore } from '../../stores/employee/employeeStore.js'
+import { toast } from 'vue3-toastify'
 
-const modal = ref(false);
+const modal = ref(false)
 
-const toggleModal = () => (modal.value = !modal.value);
+const toggleModal = () => (modal.value = !modal.value)
+
+const employeeInfo = reactive({
+  fullname: '',
+  tel: '',
+  role: '',
+  card: '',
+  login: '',
+  password: '',
+  status: true
+})
+
+const store = employeeStore()
+
+const addEmployee = () => {
+  const employee = {
+    fullname: employeeInfo.fullname,
+    tel: employeeInfo.tel,
+    role: employeeInfo.role,
+    card: employeeInfo.card,
+    login: employeeInfo.login,
+    password: employeeInfo.password,
+    status: true
+  }
+
+  store.ADD(employee)
+
+  toast.success('successfully added employee !', {
+    autoClose: 500,
+    theme: 'dark',
+    pauseOnHover: true
+  })
+}
+
+employeeInfo.fullname = ''
+employeeInfo.tel = ''
+employeeInfo.role = ''
+employeeInfo.card = ''
+employeeInfo.login = ''
+employeeInfo.password = ''
+toggleModal()
 </script>
 
 <template>
@@ -64,6 +106,7 @@ const toggleModal = () => (modal.value = !modal.value);
                   >I.F.O</label
                 >
                 <input
+                  v-model="employeeInfo.fullname"
                   type="text"
                   name="name"
                   id="name"
@@ -79,6 +122,7 @@ const toggleModal = () => (modal.value = !modal.value);
                   >Tel:</label
                 >
                 <input
+                  v-model="employeeInfo.tel"
                   type="text"
                   name="phone"
                   id="phone"
@@ -94,6 +138,7 @@ const toggleModal = () => (modal.value = !modal.value);
                   >Karta raqami</label
                 >
                 <input
+                  v-model="employeeInfo.card"
                   type="text"
                   name="cart number"
                   id="cart number"
@@ -109,6 +154,7 @@ const toggleModal = () => (modal.value = !modal.value);
                   >Lavozim</label
                 >
                 <select
+                  v-model="employeeInfo.role"
                   id="category"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 >
@@ -125,6 +171,7 @@ const toggleModal = () => (modal.value = !modal.value);
                   >Login</label
                 >
                 <input
+                  v-model="employeeInfo.login"
                   type="text"
                   name="login"
                   id="login"
@@ -140,6 +187,7 @@ const toggleModal = () => (modal.value = !modal.value);
                   >Parol</label
                 >
                 <input
+                  v-model="employeeInfo.password"
                   type="password"
                   name="password"
                   id="password"
@@ -179,9 +227,7 @@ const toggleModal = () => (modal.value = !modal.value);
     <section class="dark:bg-gray-900 p-0 sm:p-5 md:p-0 md:py-4">
       <div class="w-full max-w-screen px-0 lg:p-0">
         <!-- Start coding here -->
-        <div
-          class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden"
-        >
+        <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
           <div
             class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4"
           >
@@ -189,9 +235,7 @@ const toggleModal = () => (modal.value = !modal.value);
               <form class="flex items-center">
                 <label for="simple-search" class="sr-only">Qidiruv</label>
                 <div class="relative w-full">
-                  <div
-                    class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-                  >
+                  <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <svg
                       aria-hidden="true"
                       class="w-5 h-5 text-gray-500 dark:text-gray-400"
@@ -382,17 +426,17 @@ const toggleModal = () => (modal.value = !modal.value);
                 </tr>
               </thead>
               <tbody>
-                <tr class="border-b dark:border-gray-700">
+                <tr v-for="(el, i) in store.LIST" :key="i" class="border-b dark:border-gray-700">
                   <th
                     scope="row"
                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    Kimsan Kimsanov
+                    {{ el.fullname }}
                   </th>
-                  <td class="px-4 py-3">+998901234567</td>
-                  <td class="px-4 py-3">Admin</td>
-                  <td class="px-4 py-3">8600 1563 7896 4525</td>
-                  <td class="px-4 py-3">Faol</td>
+                  <td class="px-4 py-3">{{ el.tel }}</td>
+                  <td class="px-4 py-3">{{ el.role }}</td>
+                  <td class="px-4 py-3">{{ el.card }}</td>
+                  <td class="px-4 py-3">{{ el.status ? 'Faol' : 'Faolemas' }}</td>
                   <td class="px-4 py-3 flex items-center justify-end">
                     <button
                       id="apple-imac-27-dropdown-button"
@@ -486,6 +530,28 @@ const toggleModal = () => (modal.value = !modal.value);
                   class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                   >1</a
                 >
+              </li>
+
+              <li>
+                <a
+                  href="#"
+                  class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                >
+                  <span class="sr-only">Next</span>
+                  <svg
+                    class="w-5 h-5"
+                    aria-hidden="true"
+                    fill="currentColor"
+                    viewbox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </a>
               </li>
             </ul>
           </nav>
