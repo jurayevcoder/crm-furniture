@@ -12,6 +12,12 @@ export const navLinks = [
     icon: 'bx bxs-user-plus'
   },
   {
+    id: 9,
+    title: 'Mahsulot turi',
+    link: '/types',
+    icon: 'bx bxs-layer-plus'
+  },
+  {
     id: 8,
     title: 'Mahsulotlar',
     link: '/product',

@@ -1,59 +1,34 @@
 <script setup>
-import { ref, reactive } from 'vue'
-import { employeeStore } from '../../stores/employee/employeeStore.js'
+import { ref } from 'vue'
+import { useProductTypeStore } from '../../stores/products/ProductType'
 import { toast } from 'vue3-toastify'
 
 const modal = ref(false)
 
 const toggleModal = () => (modal.value = !modal.value)
 
-const employeeInfo = reactive({
-  fullname: '',
-  tel: '',
-  role: '',
-  card: '',
-  login: '',
-  password: '',
-  status: true
-})
+const state = useProductTypeStore()
 
-const store = employeeStore()
+const title = ref('')
 
-const addEmployee = () => {
-  const employee = {
-    fullname: employeeInfo.fullname,
-    tel: employeeInfo.tel,
-    role: employeeInfo.role,
-    card: employeeInfo.card,
-    login: employeeInfo.login,
-    password: employeeInfo.password,
-    status: true
+const addType = () => {
+  const type = {
+    id: Date.now(),
+    title: title.value
   }
 
-  store.ADD(employee)
-
-  toast.success('successfully added employee !', {
-    autoClose: 500,
-    theme: 'dark',
-    pauseOnHover: true
-  })
-
-  employeeInfo.fullname = ''
-  employeeInfo.tel = ''
-  employeeInfo.role = ''
-  employeeInfo.card = ''
-  employeeInfo.login = ''
-  employeeInfo.password = ''
-
+  state.ADD(type)
+  toast.success('successfully added new type')
   toggleModal()
+  title.value = ''
 }
 </script>
 
 <template>
   <div class="p-3">
-    <h2 class="uppercase dark:text-white text-gray-900 text-center text-4xl">Hodimlar</h2>
+    <h2 class="uppercase dark:text-white text-gray-900 text-4xl text-center">Mahsulotlar</h2>
 
-    <!-- ----------------------------------------- MODAL -------------------------------------------------------- -->
+    <!----------------------- MODAL  ---------------------------->
 
     <!-- Main modal -->
     <div
@@ -61,7 +36,7 @@ const addEmployee = () => {
       aria-hidden="true"
       :class="
         modal
-          ? 'overflow-y-auto flex bg-[rgba(0,0,0,0.4)] overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full'
+          ? 'overflow-y-auto bg-[rgba(0,0,0,0.4)] flex overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full'
           : 'hidden'
       "
     >
@@ -73,13 +48,12 @@ const addEmployee = () => {
             class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600"
           >
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-              Yangi hodim qo'shish
+              Mahsulot turini qo'shish
             </h3>
             <button
               @click="toggleModal"
               type="button"
               class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-              data-modal-toggle="defaultModal"
             >
               <svg
                 aria-hidden="true"
@@ -98,107 +72,27 @@ const addEmployee = () => {
             </button>
           </div>
           <!-- Modal body -->
-          <form @submit.prevent="addEmployee">
-            <div class="grid gap-4 mb-4 sm:grid-cols-2">
+          <form action="#" @submit.prevent>
+            <div class="grid gap-4 mb-4 sm:grid-cols-1">
               <div>
                 <label
                   for="name"
                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >I.F.O</label
+                  >Mahsulot turi</label
                 >
                 <input
-                  v-model="employeeInfo.fullname"
                   type="text"
                   name="name"
                   id="name"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Ismingizni kiriting"
+                  placeholder="Mahsulot turini kiriting"
                   required=""
-                />
-              </div>
-              <div>
-                <label
-                  for="phone"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >Tel:</label
-                >
-                <input
-                  v-model="employeeInfo.tel"
-                  type="text"
-                  name="phone"
-                  id="phone"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Telefon raqamingizni kiriting"
-                  required=""
-                />
-              </div>
-              <div>
-                <label
-                  for="cart number"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >Karta raqami</label
-                >
-                <input
-                  v-model="employeeInfo.card"
-                  type="text"
-                  name="cart number"
-                  id="cart number"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Karta raqam kiriting"
-                  required=""
-                />
-              </div>
-              <div>
-                <label
-                  for="category"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >Lavozim</label
-                >
-                <select
-                  v-model="employeeInfo.role"
-                  id="category"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                >
-                  <option selected="" disabled>Lavozimni tanlang</option>
-                  <option value="Admin">Admin</option>
-                  <option value="Operator">Operator</option>
-                  <option value="Eltuvchi">Eltuvchi</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  for="login"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >Login</label
-                >
-                <input
-                  v-model="employeeInfo.login"
-                  type="text"
-                  name="login"
-                  id="login"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Username kiriting"
-                  required=""
-                />
-              </div>
-              <div>
-                <label
-                  for="password"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >Parol</label
-                >
-                <input
-                  v-model="employeeInfo.password"
-                  type="password"
-                  name="password"
-                  id="password"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Parolni kiriting"
-                  required=""
+                  v-model="title"
                 />
               </div>
             </div>
             <button
+              @click="addType"
               type="submit"
               class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
@@ -214,16 +108,16 @@ const addEmployee = () => {
                   clip-rule="evenodd"
                 ></path>
               </svg>
-              Yangi hodim qo'shish
+              Mahsulot turini qo'shish
             </button>
           </form>
         </div>
       </div>
     </div>
 
-    <!-- ----------------------------------------- MODAL END ---------------------------------------------------- -->
+    <!------------------------ MODAL END ------------------------>
 
-    <!-- ----------------------------------------- EMPLYE TABLE ------------------------------------------------- -->
+    <!----------------------------------- EMPLYE TABLE ----------------------------->
 
     <section class="dark:bg-gray-900 p-0 sm:p-5 md:p-0 md:py-4">
       <div class="w-full max-w-screen px-0 lg:p-0">
@@ -266,7 +160,6 @@ const addEmployee = () => {
             >
               <button
                 @click="toggleModal"
-                id=""
                 type="button"
                 class="flex items-center justify-center border border-gray-200 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
               >
@@ -283,8 +176,9 @@ const addEmployee = () => {
                     d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
                   />
                 </svg>
-                Hodim qo'shish
+                Mahsulot turini qo'shish
               </button>
+
               <div class="flex items-center space-x-3 w-full md:w-auto">
                 <button
                   id="actionsDropdownButton"
@@ -305,7 +199,7 @@ const addEmployee = () => {
                       d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                     />
                   </svg>
-                  Lavozim
+                  Filter
                 </button>
                 <div
                   id="actionsDropdown"
@@ -333,10 +227,12 @@ const addEmployee = () => {
                       <a
                         href="#"
                         class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      ></a>
+                        >Eltuvchi</a
+                      >
                     </li>
                   </ul>
                 </div>
+
                 <button
                   id="filterDropdownButton"
                   data-dropdown-toggle="filterDropdown"
@@ -410,34 +306,24 @@ const addEmployee = () => {
               </div>
             </div>
           </div>
+
           <div class="overflow-x-auto">
             <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
               <thead
                 class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
               >
                 <tr>
-                  <th scope="col" class="px-4 py-3">I.F.O</th>
-                  <th scope="col" class="px-4 py-3">Tel</th>
-                  <th scope="col" class="px-4 py-3">Lavozimi</th>
-                  <th scope="col" class="px-4 py-3">Katra raqami</th>
-                  <th scope="col" class="px-4 py-3">Holati</th>
-                  <th scope="col" class="px-4 py-3">
-                    <span class="sr-only">Actions</span>
-                  </th>
+                  <th scope="col" class="px-4 py-3">Mahsulot turlari nomi</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(el, i) in store.LIST" :key="i" class="border-b dark:border-gray-700">
+                <tr v-for="el in state.LIST" :key="el.id" class="border-b dark:border-gray-700">
                   <th
                     scope="row"
                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    {{ el.fullname }}
+                    {{ el.title }}
                   </th>
-                  <td class="px-4 py-3">{{ el.tel }}</td>
-                  <td class="px-4 py-3">{{ el.role }}</td>
-                  <td class="px-4 py-3">{{ el.card }}</td>
-                  <td class="px-4 py-3">{{ el.status ? 'Faol' : 'Faolemas' }}</td>
                   <td class="px-4 py-3 flex items-center justify-end">
                     <button
                       id="apple-imac-27-dropdown-button"
@@ -525,6 +411,7 @@ const addEmployee = () => {
                   </svg>
                 </a>
               </li>
+
               <li>
                 <a
                   href="#"
@@ -560,8 +447,8 @@ const addEmployee = () => {
       </div>
     </section>
 
-    <!-- ----------------------------------------- EMPLYE TABLE END --------------------------------------------- -->
+    <!------------------------------- EMPLYE TABLE END ----------------------------->
   </div>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss"></style>

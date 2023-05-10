@@ -1,5 +1,8 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
+import { useProductTypeStore } from '../../stores/products/ProductType'
+
+const state = useProductTypeStore()
 
 const modal = ref(false)
 
@@ -112,9 +115,7 @@ const toggleModal = () => (modal.value = !modal.value)
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 >
                   <option selected="" disabled>Mahsulot turini tanlang</option>
-                  <option>Admin</option>
-                  <option>Operator</option>
-                  <option>Eltuvchi</option>
+                  <option v-for="el in state.LIST" :key="el.id">{{ el.title }}</option>
                 </select>
               </div>
             </div>
