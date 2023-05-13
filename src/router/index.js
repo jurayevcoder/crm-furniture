@@ -12,7 +12,14 @@ const router = createRouter({
         {
           path: '/employee',
           name: 'employee',
-          component: () => import('../views/Employee/Employee.vue')
+          component: () => import('../views/Employee/Employee.vue'),
+          beforeEnter: (to, from, next) => {
+            if (localStorage.getItem('role') !== 'SUPER-ADMIN') {
+              next({ name: "error" });
+            } else {
+              next();
+            }
+          }
         },
         {
           path: '/types',
@@ -32,7 +39,14 @@ const router = createRouter({
         {
           path: '/contact',
           name: 'contact',
-          component: () => import('../views/Contact/Contact.vue')
+          component: () => import('../views/Contact/Contact.vue'),
+          beforeEnter: (to, from, next) => {
+            if (localStorage.getItem('role') !== 'SUPER-ADMIN' && localStorage.getItem('role') !== 'OPERATOR') {
+              next({ name: "error" });
+            } else {
+              next();
+            }
+          }
         },
         {
           path: '/region',
@@ -52,6 +66,19 @@ const router = createRouter({
       component: () => import('../views/Error/Error.vue')
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+
+
+  let token = localStorage.getItem('token')
+
+  if (to.name !== "login" && !token) {
+    next({ name: 'login' })
+  } else {
+    next()
+  }
+
 })
 
 export default router

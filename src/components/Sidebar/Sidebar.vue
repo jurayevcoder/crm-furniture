@@ -1,8 +1,22 @@
 <script setup>
-import { ref } from 'vue'
-import { navLinks } from '../../constants/navLinks'
+import { ref, onMounted } from "vue";
+import { navLinks } from "../../constants/navLinks";
+import { useRouter } from "vue-router";
 
-const navlink = ref(navLinks)
+const navlink = ref(navLinks);
+const role = ref("");
+
+const router = useRouter();
+
+const logout = () => {
+  localStorage.clear();
+  router.push({ name: "login" });
+};
+
+onMounted(() => {
+  console.log(localStorage.getItem("role"));
+  role.value = localStorage.getItem("role");
+});
 </script>
 
 <template>
@@ -47,12 +61,19 @@ const navlink = ref(navLinks)
             </router-link>
           </li>
         </ul>
+
+        <button
+          @click="logout"
+          class="block bg-red-500 px-3 py-2 rounded-xl focus:ring-4 ring-gray-500 text-white absolute bottom-3"
+        >
+          Chiqish
+        </button>
       </div>
     </aside>
   </div>
 </template>
 
-<style scoped>
+<style lang="css" scoped>
 .router-link-active {
   border: 1px dashed rgb(128, 128, 128, 0.586);
 }
