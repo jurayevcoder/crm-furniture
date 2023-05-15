@@ -20,8 +20,8 @@ const useLogin = () => {
   useAuth(senUser)
     .then((res) => {
       console.log(res)
-      localStorage.setItem('token', res?.data?.data?.token)
-      localStorage.setItem('role', res?.data?.data?.staff?.role)
+      localStorage.setItem('token', res?.data?.token[0])
+      localStorage.setItem('role', res?.data?.staff?.role)
       router.push({ name: 'dashboard' })
       toast.success('dashboard successfully logged in')
     })

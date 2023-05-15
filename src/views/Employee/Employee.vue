@@ -2,10 +2,21 @@
 import { ref, reactive, onMounted } from "vue";
 import { employeeStore } from "../../stores/employee/employeeStore.js";
 import { toast } from "vue3-toastify";
-import {useEmployee} from '../../service/employee'
+import { useEmployee } from "../../service/employee";
 
 const modal = ref(false);
 const toggleModal = () => (modal.value = !modal.value);
+
+const pagination = reactive({
+  totalPage: 0,
+  currentPage: 0,
+  totalCount: 0,
+  endpage: 0,
+});
+
+let start = ref(0);
+let end = ref(0);
+let count = ref(0);
 
 const employeeInfo = reactive({
   fullname: "",
@@ -21,7 +32,15 @@ const store = employeeStore();
 
 const listUpdate = () => {
   useEmployee.list().then((res) => {
-    store.SET_LIST(res?.data?.data?.records);
+    console.log(res);
+    pagination.totalCount = res?.data?.pagination?.totalCount;
+    pagination.currentPage = res?.data?.pagination?.currentPage?.page;
+    pagination.totalPage = res?.data?.pagination?.totalPages;
+    pagination.endpage = res?.data?.records?.length;
+    start.value = pagination.currentPage * 10 - 9;
+    end.value = pagination.currentPage * 10 - 10 + pagination.endpage;
+    count.value = res?.data?.pagination?.totalCount;
+    store.SET_LIST(res?.data?.records);
   });
 };
 
@@ -61,8 +80,53 @@ const addEmployee = () => {
   toggleModal();
 };
 
+const paginate = (num) => {
+  localStorage.setItem("page_number", num);
+  listUpdate(num);
+};
+
+const active = (id, status) => {
+  console.log(id);
+  const statusId = {
+    id: id,
+    value: !status,
+  };
+
+  console.log(statusId);
+
+  useEmployee
+    .isactive(statusId)
+    .then((res) => {
+      if (res.status === 200) {
+        toast.success("success");
+        listUpdate(localStorage.getItem("page_number"));
+      }
+    })
+    .catch(() => {
+      toast.error("error");
+    });
+};
+
+const remove = (id) => {
+  useEmployee
+    .delete(id)
+    .then((res) => {
+      if (res.status === 200) {
+        toast.success("success");
+        if (localStorage.getItem("page_number") > pagination.totalPage) {
+          listUpdate(pagination.totalPage);
+        } else {
+          listUpdate(localStorage.getItem("page_number"));
+        }
+      }
+    })
+    .catch(() => {
+      toast.error("error");
+    });
+};
+
 onMounted(() => {
-  listUpdate();
+  listUpdate(localStorage.getItem("page_number"));
 });
 </script>
 
@@ -306,6 +370,7 @@ onMounted(() => {
                 </svg>
                 Hodim qo'shish
               </button>
+
               <div class="flex items-center space-x-3 w-full md:w-auto">
                 <button
                   id="actionsDropdownButton"
@@ -442,9 +507,8 @@ onMounted(() => {
                   <th scope="col" class="px-4 py-3">Lavozimi</th>
                   <th scope="col" class="px-4 py-3">Katra raqami</th>
                   <th scope="col" class="px-4 py-3">Holati</th>
-                  <th scope="col" class="px-4 py-3">
-                    <span class="sr-only">Actions</span>
-                  </th>
+                  <th scope="col" class="px-4 py-3">O'zgartish</th>
+                  <th scope="col" class="px-4 py-3">O'chirish</th>
                 </tr>
               </thead>
               <tbody>
@@ -456,63 +520,32 @@ onMounted(() => {
                   <th
                     scope="row"
                     class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  > 
+                  >
                     {{ el.full_name }}
                   </th>
                   <td class="px-4 py-3">{{ el.phone_number }}</td>
                   <td class="px-4 py-3">{{ el.role }}</td>
                   <td class="px-4 py-3">{{ el.card }}</td>
                   <td class="px-4 py-3">{{ el.status ? "Faol" : "Faolemas" }}</td>
-                  <td class="px-4 py-3 flex items-center justify-end">
+                  <td class="px-4 py-3">
                     <button
-                      id="apple-imac-27-dropdown-button"
-                      data-dropdown-toggle="apple-imac-27-dropdown"
-                      class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100"
-                      type="button"
+                      @click="active(el._id, el.is_active)"
+                      :class="
+                        el.is_active
+                          ? 'bg-green-500 px-3 py-2 text-white focus:ring-2'
+                          : 'bg-red-500 px-3 py-2 text-white focus:ring-2'
+                      "
                     >
-                      <svg
-                        class="w-5 h-5"
-                        aria-hidden="true"
-                        fill="currentColor"
-                        viewbox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"
-                        />
-                      </svg>
+                      {{ el.is_active ? "On" : "Off" }}
                     </button>
-                    <div
-                      id="apple-imac-27-dropdown"
-                      class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600"
+                  </td>
+                  <td class="px-4 py-3">
+                    <button
+                      @click="remove(el._id)"
+                      class="bg-red-500 px-3 py-2 text-white focus:ring-2"
                     >
-                      <ul
-                        class="py-1 text-sm text-gray-700 dark:text-gray-200"
-                        aria-labelledby="apple-imac-27-dropdown-button"
-                      >
-                        <li>
-                          <a
-                            href="#"
-                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                            >Show</a
-                          >
-                        </li>
-                        <li>
-                          <a
-                            href="#"
-                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                            >Edit</a
-                          >
-                        </li>
-                      </ul>
-                      <div class="py-1">
-                        <a
-                          href="#"
-                          class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                          >Delete</a
-                        >
-                      </div>
-                    </div>
+                      O'chirish
+                    </button>
                   </td>
                 </tr>
               </tbody>
@@ -524,60 +557,19 @@ onMounted(() => {
           >
             <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
               Sahifa
-              <span class="font-semibold text-gray-900 dark:text-white">1-10</span>
+              <span class="font-semibold text-gray-900 dark:text-white"
+                >{{ start }} - {{ end }}</span
+              >
               dan
-              <span class="font-semibold text-gray-900 dark:text-white">1000</span>
+              <span class="font-semibold text-gray-900 dark:text-white">{{ count }}</span>
             </span>
             <ul class="inline-flex items-stretch -space-x-px">
-              <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                >
-                  <span class="sr-only">Previous</span>
-                  <svg
-                    class="w-5 h-5"
-                    aria-hidden="true"
-                    fill="currentColor"
-                    viewbox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </a>
-              </li>
-              <li>
+              <li v-for="el in pagination.totalPage" :key="el" @click="paginate(el)">
                 <a
                   href="#"
                   class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                  >1</a
+                  >{{ el }}</a
                 >
-              </li>
-
-              <li>
-                <a
-                  href="#"
-                  class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                >
-                  <span class="sr-only">Next</span>
-                  <svg
-                    class="w-5 h-5"
-                    aria-hidden="true"
-                    fill="currentColor"
-                    viewbox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </a>
               </li>
             </ul>
           </nav>
