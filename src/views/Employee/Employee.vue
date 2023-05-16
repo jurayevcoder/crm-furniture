@@ -65,8 +65,8 @@ const addEmployee = () => {
     });
 
   toast.success("successfully added employee !", {
-    autoClose: 500,
-    theme: "dark",
+    autoClose: 1000,
+    theme: "light",
     pauseOnHover: true,
   });
 
@@ -97,7 +97,11 @@ const active = (id, status) => {
     .isactive(statusId)
     .then((res) => {
       if (res.status === 201) {
-        toast.success("success");
+        toast.success("success", {
+          autoClose: 1000,
+          theme: "light",
+          pauseOnHover: true,
+        });
         listUpdate(localStorage.getItem("page_number"));
       }
     })
@@ -111,7 +115,11 @@ const remove = (id) => {
     .delete(id)
     .then((res) => {
       if (res.status === 200) {
-        toast.success("success");
+        toast.success("success", {
+          autoClose: 1000,
+          theme: "light",
+          pauseOnHover: true,
+        });
         if (localStorage.getItem("page_number") >= pagination.totalPage) {
           listUpdate(pagination.totalPage);
         } else {
@@ -418,7 +426,7 @@ onMounted(() => {
                       <a
                         href="#"
                         class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      ></a>
+                      >Eltuvchi</a>
                     </li>
                   </ul>
                 </div>

@@ -1,22 +1,22 @@
 import axios from "../axios";
 
-export const useProduct = {
+export const useProductType = {
 
-    create: (state) => axios.post("/products/create", state, {
+    typeCreate: (state) => axios.post("/categorys/create", state, {
         headers: {
             "Authorization": `Bearer ${localStorage.getItem('token')
                 }`
         }
     }),
 
-    list: (num = 1) => axios.get(`/products/find-all?page=${num}`, {
+    typeList: (num = 1) => axios.get(`/categorys/find-all?page=${num}`, {
         headers: {
             "Authorization": `Bearer ${localStorage.getItem('token')
                 }`
         }
     }),
 
-    delete: (id) => axios.delete(`/products/delete/${id}`, {
+    delete: (id) => axios.delete(`/categorys/delete/${id}`, {
         headers: {
             "Authorization": `Bearer ${localStorage.getItem('token')
                 }`
