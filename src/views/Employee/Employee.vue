@@ -25,17 +25,17 @@ const employeeInfo = reactive({
   card: "",
   login: "",
   password: "",
-  status: true,
+  status: false,
 });
 
 const store = employeeStore();
 
-const listUpdate = () => {
-  useEmployee.list().then((res) => {
+const listUpdate = (num) => {
+  useEmployee.list(num).then((res) => {
     console.log(res);
     pagination.totalCount = res?.data?.pagination?.totalCount;
     pagination.currentPage = res?.data?.pagination?.currentPage?.page;
-    pagination.totalPage = res?.data?.pagination?.totalPages;
+    pagination.totalPage = res?.data?.pagination?.totalPage;
     pagination.endpage = res?.data?.records?.length;
     start.value = pagination.currentPage * 10 - 9;
     end.value = pagination.currentPage * 10 - 10 + pagination.endpage;
@@ -52,13 +52,13 @@ const addEmployee = () => {
     card: employeeInfo.card,
     login: employeeInfo.login,
     password: employeeInfo.password,
-    status: true,
+    status: employeeInfo.status,
   };
 
   useEmployee
     .create(employee)
     .then(() => {
-      listUpdate();
+      listUpdate(localStorage.getItem("page_number"));
     })
     .catch((err) => {
       console.log(err);
@@ -86,10 +86,9 @@ const paginate = (num) => {
 };
 
 const active = (id, status) => {
-  console.log(id);
   const statusId = {
     id: id,
-    value: !status,
+    is_active: !status,
   };
 
   console.log(statusId);
@@ -97,7 +96,7 @@ const active = (id, status) => {
   useEmployee
     .isactive(statusId)
     .then((res) => {
-      if (res.status === 200) {
+      if (res.status === 201) {
         toast.success("success");
         listUpdate(localStorage.getItem("page_number"));
       }
@@ -113,7 +112,7 @@ const remove = (id) => {
     .then((res) => {
       if (res.status === 200) {
         toast.success("success");
-        if (localStorage.getItem("page_number") > pagination.totalPage) {
+        if (localStorage.getItem("page_number") >= pagination.totalPage) {
           listUpdate(pagination.totalPage);
         } else {
           listUpdate(localStorage.getItem("page_number"));
@@ -513,7 +512,7 @@ onMounted(() => {
               </thead>
               <tbody>
                 <tr
-                  v-for="(el, i) in store.LIST.reverse()"
+                  v-for="(el, i) in store.LIST"
                   :key="i"
                   class="border-b dark:border-gray-700"
                 >
@@ -526,10 +525,10 @@ onMounted(() => {
                   <td class="px-4 py-3">{{ el.phone_number }}</td>
                   <td class="px-4 py-3">{{ el.role }}</td>
                   <td class="px-4 py-3">{{ el.card }}</td>
-                  <td class="px-4 py-3">{{ el.status ? "Faol" : "Faolemas" }}</td>
+                  <td class="px-4 py-3">{{ el.is_active ? "Faol" : "Faolemas" }}</td>
                   <td class="px-4 py-3">
                     <button
-                      @click="active(el._id, el.is_active)"
+                      @click="active(el.id, el.is_active)"
                       :class="
                         el.is_active
                           ? 'bg-green-500 px-3 py-2 text-white focus:ring-2'
@@ -541,7 +540,7 @@ onMounted(() => {
                   </td>
                   <td class="px-4 py-3">
                     <button
-                      @click="remove(el._id)"
+                      @click="remove(el.id)"
                       class="bg-red-500 px-3 py-2 text-white focus:ring-2"
                     >
                       O'chirish
