@@ -474,11 +474,10 @@ onMounted(() => {
                   </th>
                   <td class="px-4 py-3">{{ el.price }}</td>
                   <td class="px-4 py-3">{{ el.category.name }}</td>
-                  <td class="px-4 py-3">{{ el.createdAt }}</td>
+                  <td class="px-4 py-3">{{ el.createdAt.split("T")[0] }}</td>
                   <td class="px-4 py-3">
                     <img
-                      id="imgProduct"
-                      src=""
+                      :src="el.image"
                       alt="mebel"
                       class="rounded-full object-cover w-[45px] h-[45px] border border-dashed"
                     />
